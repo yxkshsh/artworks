@@ -1,0 +1,12 @@
+# 构建脚本的临时产物
+__pycache__/
+*.pyc
+
+# 本地截图 / 调试文件
+_shots/
+*.tmp.mp4
+
+# 系统杂项
+.DS_Store
+Thumbs.db
+desktop.ini
