@@ -35,6 +35,9 @@ ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_SRC = Path(r"D:\下载\素材")
 INK = (10, 10, 11)  # 页面底色，用来压平透明通道
 
+# 站点地址：换成自己的域名时改这里（og:image 等社交卡片要用绝对地址）
+SITE_URL = "https://yxkshsh.github.io/artworks/"
+
 # ------------------------------------------------------------------
 # 内容清单：标题、顺序、文案、抽帧时间都在这里改
 # ------------------------------------------------------------------
@@ -523,8 +526,11 @@ def render_html(generated: str) -> str:
 <meta property="og:type" content="website" />
 <meta property="og:title" content="作品集 · yxkshsh" />
 <meta property="og:description" content="2026 年的 AI 影像与图像：{film_count} 段短片、{still_count} 幅静帧。" />
-<meta property="og:image" content="media/web/og.webp" />
+<meta property="og:image" content="{SITE_URL}media/web/og.webp" />
+<meta property="og:url" content="{SITE_URL}" />
+<meta property="og:site_name" content="yxkshsh 作品集" />
 <meta name="twitter:card" content="summary_large_image" />
+<link rel="canonical" href="{SITE_URL}" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230a0a0b'/%3E%3Ctext x='32' y='45' font-family='Georgia,serif' font-size='36' fill='%23d9a96b' text-anchor='middle'%3Ey%3C/text%3E%3C/svg%3E" />
 <link rel="stylesheet" href="assets/site.css" />
 <script>document.documentElement.className += ' js';</script>
