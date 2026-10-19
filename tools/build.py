@@ -21,12 +21,13 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import shutil
 import struct
 import subprocess
 import tempfile
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 
 from PIL import Image, ImageOps
@@ -435,7 +436,13 @@ def build(src: Path) -> None:
                 print(f"  - 删除旧文件 {f.relative_to(ROOT)}")
 
     # ---- 页面 ----
-    (ROOT / "index.html").write_text(render_html(generated=date.today().isoformat()), encoding="utf-8")
+    build_id = datetime.now().strftime("%Y%m%d%H%M%S")
+    (ROOT / "index.html").write_text(
+        render_html(generated=date.today().isoformat(), build_id=build_id), encoding="utf-8"
+    )
+    (ROOT / "version.json").write_text(
+        json.dumps({"build": build_id}), encoding="utf-8"
+    )
     (ROOT / "README.md").write_text(render_readme(), encoding="utf-8")
     (ROOT / "media" / "manifest.json").write_text(
         json.dumps(
@@ -470,7 +477,19 @@ def esc(text: str) -> str:
     )
 
 
-def render_html(generated: str) -> str:
+def asset_version(name: str) -> str:
+    """样式 / 脚本的内容指纹。
+
+    GitHub Pages 给所有文件都加 10 分钟缓存，改完样式刷新页面常常还是旧的。
+    把文件哈希挂到 URL 上，内容一变地址就变，浏览器只能重新下载。
+    """
+    path = ROOT / "assets" / name
+    if not path.exists():
+        return "0"
+    return hashlib.md5(path.read_bytes()).hexdigest()[:8]
+
+
+def render_html(generated: str, build_id: str = "") -> str:
     films = []
     for i, f in enumerate(FILMS, 1):
         poster = (
@@ -524,6 +543,9 @@ def render_html(generated: str) -> str:
     page_title = f"{title} · {name}"
     page_desc = f"{year} 年的 AI 影像与图像：{film_count} 段短片、{still_count} 幅静帧。"
     repo_label = SITE["repo"].replace("https://", "").rstrip("/")
+    css_v = asset_version("site.css")
+    js_v = asset_version("site.js")
+    boot_v = asset_version("boot.js")
 
     note = ""
     if film_count % 2 == 1:
@@ -552,7 +574,8 @@ def render_html(generated: str) -> str:
 <meta name="twitter:card" content="summary_large_image" />
 <link rel="canonical" href="{SITE_URL}" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230a0a0b'/%3E%3Ctext x='32' y='45' font-family='Georgia,serif' font-size='36' fill='%23d9a96b' text-anchor='middle'%3Ey%3C/text%3E%3C/svg%3E" />
-<link rel="stylesheet" href="assets/site.css" />
+<link rel="stylesheet" href="assets/site.css?v={css_v}" />
+<script src="assets/boot.js?v={boot_v}" data-build="{build_id}"></script>
 <script>document.documentElement.className += ' js';</script>
 </head>
 <body>
@@ -626,7 +649,7 @@ def render_html(generated: str) -> str:
   <figcaption><strong></strong><span class="lb-sub"></span></figcaption>
 </div>
 
-<script src="assets/site.js" defer></script>
+<script src="assets/site.js?v={js_v}" defer></script>
 </body>
 </html>
 """
@@ -678,6 +701,8 @@ git push
 index.html            构建产物（由 tools/build.py 生成，不要手改）
 assets/site.css       样式，手写
 assets/site.js        交互：视频播放 / 图像灯箱 / 滚动入场
+assets/boot.js        版本自检：页面是旧的就自动刷新一次
+version.json          构建号，boot.js 用它判断新旧
 media/video/*.mp4     发布用视频（已转成 H.264，浏览器都能播）
 media/orig/*          原始图片，未压缩
 media/web/*           网页用的 webp：大图、缩略图、海报、封面
@@ -685,6 +710,21 @@ media/manifest.json   每次构建的清单
 tools/build.py        构建脚本，标题与文案都写在里面
 tools/preview.py      本地预览（补了 webp 的 MIME）
 ```
+
+## 推上去之后网页没变？
+
+GitHub Pages 会给 HTML 和 CSS 加 `Cache-Control: max-age=600`，也就是最多 10 分钟缓存。
+所以刚推完立刻刷新，经常看到的还是旧页面——这不是没部署成功。
+
+这个站做了两层处理：
+
+1. `site.css` / `site.js` / `boot.js` 的地址后面挂了内容哈希（`?v=1b646057`），
+   文件一改地址就变，浏览器只能重新下载；
+2. `boot.js` 加载时会用 `no-store` 去问 `version.json`，发现服务器上的构建号比
+   本页新，就自动刷新一次（每个构建只试一次，不会循环）。
+
+还是看到旧版时：按 `Ctrl + F5`（Mac 是 `Cmd + Shift + R`）强制刷新，
+或者在网址后面随便加个参数，例如 `https://yxkshsh.github.io/artworks/?v=2`。
 
 ## 加新作品
 

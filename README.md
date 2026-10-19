@@ -39,6 +39,8 @@ git push
 index.html            构建产物（由 tools/build.py 生成，不要手改）
 assets/site.css       样式，手写
 assets/site.js        交互：视频播放 / 图像灯箱 / 滚动入场
+assets/boot.js        版本自检：页面是旧的就自动刷新一次
+version.json          构建号，boot.js 用它判断新旧
 media/video/*.mp4     发布用视频（已转成 H.264，浏览器都能播）
 media/orig/*          原始图片，未压缩
 media/web/*           网页用的 webp：大图、缩略图、海报、封面
@@ -46,6 +48,21 @@ media/manifest.json   每次构建的清单
 tools/build.py        构建脚本，标题与文案都写在里面
 tools/preview.py      本地预览（补了 webp 的 MIME）
 ```
+
+## 推上去之后网页没变？
+
+GitHub Pages 会给 HTML 和 CSS 加 `Cache-Control: max-age=600`，也就是最多 10 分钟缓存。
+所以刚推完立刻刷新，经常看到的还是旧页面——这不是没部署成功。
+
+这个站做了两层处理：
+
+1. `site.css` / `site.js` / `boot.js` 的地址后面挂了内容哈希（`?v=1b646057`），
+   文件一改地址就变，浏览器只能重新下载；
+2. `boot.js` 加载时会用 `no-store` 去问 `version.json`，发现服务器上的构建号比
+   本页新，就自动刷新一次（每个构建只试一次，不会循环）。
+
+还是看到旧版时：按 `Ctrl + F5`（Mac 是 `Cmd + Shift + R`）强制刷新，
+或者在网址后面随便加个参数，例如 `https://yxkshsh.github.io/artworks/?v=2`。
 
 ## 加新作品
 
