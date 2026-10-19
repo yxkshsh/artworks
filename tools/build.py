@@ -53,90 +53,23 @@ SITE = {
 SITE_URL = SITE["url"]  # 社交卡片、canonical 要用绝对地址
 
 # ------------------------------------------------------------------
-# 内容清单：标题、顺序、文案、抽帧时间都在这里改
+# 内容清单：从 content.json 读取。加作品建议用 tools/add.py，或直接编辑该文件
 # ------------------------------------------------------------------
 
-FILMS = [
-    {
-        "slug": "night-street",
-        "title": "夜街 · 猫耳",
-        "en": "Night Street",
-        "desc": "自拍视角走过夜里的街，走到一半，身后多了一个人。",
-        "src": "152d95c1c39c9ffeb68a3d2c420634fa.mp4",
-        "poster_at": 9.0,
-    },
-    {
-        "slug": "face-check",
-        "title": "FACE CHECK",
-        "en": "Face Check",
-        "desc": "正面特写、打勾、再换一个角度：把「验脸」做成十五秒的梗。",
-        "src": "5266ff62a87a8b5a705f2eadc5c01bfe.mp4",
-        "poster_at": 9.0,
-        "focus": "50% 32%",
-    },
-    {
-        "slug": "waterside",
-        "title": "水畔",
-        "en": "Waterside",
-        "desc": "蓝发少女泡在水光与虹彩里，画面几乎是静的，只有高光在动。",
-        "src": "7ea1049345fb60bf0eb34d877d950499.mp4",
-        "poster_at": 2.0,
-    },
-    {
-        "slug": "dialogue",
-        "title": "对白",
-        "en": "Dialogue",
-        "desc": "夜车里的一场对话，浅景深，对面的人始终只露一个肩。",
-        "src": "canvas-video-20260808022600.mp4",
-        "poster_at": 10.0,
-        "scale_w": 1600,
-    },
-    {
-        "slug": "offcut",
-        "title": "试剪 06",
-        "en": "Offcut 06",
-        "desc": "四秒钟的试剪，从上一段素材里留下的一个眼神。",
-        "src": "video-fb8802fa-1ec8-42d5-a657-24c1fb9f0d2d-assistant.mp4",
-        "poster_at": 2.2,
-    },
-]
+CONTENT_PATH = ROOT / "content.json"
 
-STILLS = [
-    {
-        "slug": "portrait",
-        "title": "肖像",
-        "sub": "Portrait",
-        "src": "kling_20260806_作品_25岁女性_五官精致_5400_0.png",
-        "desc": "白底、黑大衣、自然光，一张干净的定妆照。",
-    },
-    {
-        "slug": "empty-scene",
-        "title": "空场景",
-        "sub": "Empty Scene",
-        "src": "kling_20260806_作品_空场景_无角色_荒寂_5464_0.png",
-        "desc": "夜里的一扇门、一条空街，一个人也没有。",
-        "crop_bottom": 0.07,  # 去掉右下角的工具水印
-    },
-    {
-        "slug": "cloud-city",
-        "title": "云上白城",
-        "sub": "City Above Clouds",
-        "src": "canvas-image-20260808020919.png",
-        "desc": "云层之上的白色城邦，也在首页当了封面。",
-    },
-]
 
-# 不进公开页面的素材：第三方水印或重复内容
-EXCLUDED = [
-    ("A3-构图锚点.png", "电视剧截图，带 L!BTV 台标"),
-    ("A4-风格锚点.png", "电视剧截图，带 L!BTV 台标"),
-    ("image.png", "带「知乎 @浮点AI」水印的第三方图"),
-    ("da0c88183e537ccc6707cd08bd934c4a.mp4", "抖音竖版轮播，画面内嵌抖音号水印，与 FACE CHECK 重复"),
-    ("5266ff62a87a8b5a705f2eadc5c01bfe.jpg", "FACE CHECK 的静帧，改由视频抽帧"),
-    ("da0c88183e537ccc6707cd08bd934c4a.jpg", "竖版静帧，随竖版视频一起排除"),
-    ("152d95c1c39c9ffeb68a3d2c420634fa.jpg", "夜街静帧，改由视频抽帧"),
-    ("7ea1049345fb60bf0eb34d877d950499.jpg", "水畔静帧，改由视频抽帧"),
-]
+def load_content() -> tuple[list[dict], list[dict], list[dict]]:
+    if not CONTENT_PATH.exists():
+        raise SystemExit(f"找不到内容清单：{CONTENT_PATH}")
+    try:
+        data = json.loads(CONTENT_PATH.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise SystemExit(f"content.json 第 {exc.lineno} 行有语法错误：{exc.msg}")
+    return data.get("films", []), data.get("stills", []), data.get("excluded", [])
+
+
+FILMS, STILLS, EXCLUDED = load_content()
 
 
 # ------------------------------------------------------------------
@@ -451,7 +384,7 @@ def build(src: Path) -> None:
                 "source": str(src),
                 "films": FILMS,
                 "stills": [{k: v for k, v in s.items() if k != "src"} for s in STILLS],
-                "excluded": [{"file": f, "reason": r} for f, r in EXCLUDED],
+                "excluded": EXCLUDED,
             },
             ensure_ascii=False,
             indent=2,
@@ -699,6 +632,7 @@ git push
 
 ```
 index.html            构建产物（由 tools/build.py 生成，不要手改）
+content.json          作品清单：标题、顺序、文案都在这里
 assets/site.css       样式，手写
 assets/site.js        交互：视频播放 / 图像灯箱 / 滚动入场
 assets/boot.js        版本自检：页面是旧的就自动刷新一次
@@ -707,7 +641,8 @@ media/video/*.mp4     发布用视频（已转成 H.264，浏览器都能播）
 media/orig/*          原始图片，未压缩
 media/web/*           网页用的 webp：大图、缩略图、海报、封面
 media/manifest.json   每次构建的清单
-tools/build.py        构建脚本，标题与文案都写在里面
+tools/build.py        构建脚本
+tools/add.py          交互式添加作品
 tools/preview.py      本地预览（补了 webp 的 MIME）
 ```
 
@@ -728,9 +663,25 @@ GitHub Pages 会给 HTML 和 CSS 加 `Cache-Control: max-age=600`，也就是最
 
 ## 加新作品
 
-1. 把新文件放进素材目录（默认 `D:\\下载\\素材`）。
-2. 编辑 `tools/build.py` 顶部的 `FILMS` / `STILLS` 列表，加一条记录。
-3. 重新构建并发布：
+**方式一：交互式脚本（推荐）**
+
+```powershell
+cd D:\\project_study\\artworks
+python tools\\add.py
+```
+
+按提示把文件拖进窗口，回答标题、英文小字、介绍；它会自动把文件复制进素材目录、
+读出时长或尺寸、写进 `content.json`，最后问你要不要构建、要不要顺手发布。
+
+也可以直接双击仓库根目录的 `添加作品.cmd`，效果一样。
+
+**方式二：手动编辑 content.json**
+
+1. 把文件放进素材目录（默认 `D:\\下载\\素材`）。
+2. 在 `content.json` 的 `films` / `stills` 里加一条，字段可以参考已有条目：
+   视频用 `slug / title / en / desc / src / poster_at`，
+   图片用 `slug / title / sub / src / desc`（可选 `crop_bottom`）。
+3. 构建并发布：
 
 ```bash
 python tools/build.py
@@ -738,6 +689,8 @@ git add -A
 git commit -m "add: 新作品"
 git push
 ```
+
+`slug` 决定网址和文件名，不能重复；顺序就是页面上的顺序，编号会自动重排。
 
 GitHub Pages 会在推送后一分钟左右自动更新。
 

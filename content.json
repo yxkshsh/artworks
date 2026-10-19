@@ -1,0 +1,104 @@
+{
+  "films": [
+    {
+      "slug": "night-street",
+      "title": "夜街 · 猫耳",
+      "en": "Night Street",
+      "desc": "自拍视角走过夜里的街，走到一半，身后多了一个人。",
+      "src": "152d95c1c39c9ffeb68a3d2c420634fa.mp4",
+      "poster_at": 9.0
+    },
+    {
+      "slug": "face-check",
+      "title": "FACE CHECK",
+      "en": "Face Check",
+      "desc": "正面特写、打勾、再换一个角度：把「验脸」做成十五秒的梗。",
+      "src": "5266ff62a87a8b5a705f2eadc5c01bfe.mp4",
+      "poster_at": 9.0,
+      "focus": "50% 32%"
+    },
+    {
+      "slug": "waterside",
+      "title": "水畔",
+      "en": "Waterside",
+      "desc": "蓝发少女泡在水光与虹彩里，画面几乎是静的，只有高光在动。",
+      "src": "7ea1049345fb60bf0eb34d877d950499.mp4",
+      "poster_at": 2.0
+    },
+    {
+      "slug": "dialogue",
+      "title": "对白",
+      "en": "Dialogue",
+      "desc": "夜车里的一场对话，浅景深，对面的人始终只露一个肩。",
+      "src": "canvas-video-20260808022600.mp4",
+      "poster_at": 10.0,
+      "scale_w": 1600
+    },
+    {
+      "slug": "offcut",
+      "title": "试剪 06",
+      "en": "Offcut 06",
+      "desc": "四秒钟的试剪，从上一段素材里留下的一个眼神。",
+      "src": "video-fb8802fa-1ec8-42d5-a657-24c1fb9f0d2d-assistant.mp4",
+      "poster_at": 2.2
+    }
+  ],
+  "stills": [
+    {
+      "slug": "portrait",
+      "title": "肖像",
+      "sub": "Portrait",
+      "src": "kling_20260806_作品_25岁女性_五官精致_5400_0.png",
+      "desc": "白底、黑大衣、自然光，一张干净的定妆照。"
+    },
+    {
+      "slug": "empty-scene",
+      "title": "空场景",
+      "sub": "Empty Scene",
+      "src": "kling_20260806_作品_空场景_无角色_荒寂_5464_0.png",
+      "desc": "夜里的一扇门、一条空街，一个人也没有。",
+      "crop_bottom": 0.07
+    },
+    {
+      "slug": "cloud-city",
+      "title": "云上白城",
+      "sub": "City Above Clouds",
+      "src": "canvas-image-20260808020919.png",
+      "desc": "云层之上的白色城邦，也在首页当了封面。"
+    }
+  ],
+  "excluded": [
+    {
+      "file": "A3-构图锚点.png",
+      "reason": "电视剧截图，带 L!BTV 台标"
+    },
+    {
+      "file": "A4-风格锚点.png",
+      "reason": "电视剧截图，带 L!BTV 台标"
+    },
+    {
+      "file": "image.png",
+      "reason": "带「知乎 @浮点AI」水印的第三方图"
+    },
+    {
+      "file": "da0c88183e537ccc6707cd08bd934c4a.mp4",
+      "reason": "抖音竖版轮播，画面内嵌抖音号水印，与 FACE CHECK 重复"
+    },
+    {
+      "file": "5266ff62a87a8b5a705f2eadc5c01bfe.jpg",
+      "reason": "FACE CHECK 的静帧，改由视频抽帧"
+    },
+    {
+      "file": "da0c88183e537ccc6707cd08bd934c4a.jpg",
+      "reason": "竖版静帧，随竖版视频一起排除"
+    },
+    {
+      "file": "152d95c1c39c9ffeb68a3d2c420634fa.jpg",
+      "reason": "夜街静帧，改由视频抽帧"
+    },
+    {
+      "file": "7ea1049345fb60bf0eb34d877d950499.jpg",
+      "reason": "水畔静帧，改由视频抽帧"
+    }
+  ]
+}
