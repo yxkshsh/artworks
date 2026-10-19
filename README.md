@@ -5,6 +5,34 @@
 - 页面：https://yxkshsh.github.io/artworks/
 - 仓库：https://github.com/yxkshsh/artworks
 
+## 改标题 / 署名
+
+站点级信息集中在 `tools/build.py` 顶部的 `SITE`：
+
+```python
+SITE = {
+    "name": "yxkshsh",            # 署名：页头、页脚、浏览器标签
+    "title": "作品集",             # 首屏大标题
+    "title_en": "Selected Works", # 右上角英文小字
+    "kicker": "AI 影像与图像",     # 标题上方的小字
+    "year": "2026",
+    ...
+}
+```
+
+- `title` 同时决定首屏大标题、浏览器标签（`作品集 · yxkshsh`）和分享卡片标题；
+- `name` 是署名，会出现在页头、页脚和 © 那一行；
+- 单条作品的标题不在这里，而在下面 `FILMS` / `STILLS` 每一条的 `"title"` 字段。
+
+改完重新构建再推送，一分钟左右线上生效：
+
+```bash
+python tools/build.py
+git add -A
+git commit -m "chore: 改标题"
+git push
+```
+
 ## 目录
 
 ```

@@ -35,8 +35,21 @@ ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_SRC = Path(r"D:\下载\素材")
 INK = (10, 10, 11)  # 页面底色，用来压平透明通道
 
-# 站点地址：换成自己的域名时改这里（og:image 等社交卡片要用绝对地址）
-SITE_URL = "https://yxkshsh.github.io/artworks/"
+# ------------------------------------------------------------------
+# 站点信息：改标题、署名、年份，只改这里
+# ------------------------------------------------------------------
+
+SITE = {
+    "name": "yxkshsh",                 # 署名：页头、页脚、浏览器标签里用
+    "title": "作品集",                  # 大标题（首屏那个巨大的字）
+    "title_en": "Selected Works",      # 右上角的英文小字
+    "kicker": "AI 影像与图像",          # 大标题上方那行小字
+    "year": "2026",
+    "url": "https://yxkshsh.github.io/artworks/",
+    "repo": "https://github.com/yxkshsh/artworks",
+}
+
+SITE_URL = SITE["url"]  # 社交卡片、canonical 要用绝对地址
 
 # ------------------------------------------------------------------
 # 内容清单：标题、顺序、文案、抽帧时间都在这里改
@@ -505,6 +518,13 @@ def render_html(generated: str) -> str:
     still_count = len(STILLS)
     total_seconds = sum(f["seconds"] for f in FILMS)
 
+    name = SITE["name"]
+    title = SITE["title"]
+    year = SITE["year"]
+    page_title = f"{title} · {name}"
+    page_desc = f"{year} 年的 AI 影像与图像：{film_count} 段短片、{still_count} 幅静帧。"
+    repo_label = SITE["repo"].replace("https://", "").rstrip("/")
+
     note = ""
     if film_count % 2 == 1:
         note = """
@@ -519,16 +539,16 @@ def render_html(generated: str) -> str:
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>作品集 · yxkshsh</title>
-<meta name="description" content="2026 年的 AI 影像与图像：{film_count} 段短片、{still_count} 幅静帧。" />
-<meta name="author" content="yxkshsh" />
+<title>{page_title}</title>
+<meta name="description" content="{page_desc}" />
+<meta name="author" content="{name}" />
 <meta name="theme-color" content="#0a0a0b" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="作品集 · yxkshsh" />
-<meta property="og:description" content="2026 年的 AI 影像与图像：{film_count} 段短片、{still_count} 幅静帧。" />
+<meta property="og:title" content="{page_title}" />
+<meta property="og:description" content="{page_desc}" />
 <meta property="og:image" content="{SITE_URL}media/web/og.webp" />
 <meta property="og:url" content="{SITE_URL}" />
-<meta property="og:site_name" content="yxkshsh 作品集" />
+<meta property="og:site_name" content="{name} · {title}" />
 <meta name="twitter:card" content="summary_large_image" />
 <link rel="canonical" href="{SITE_URL}" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%230a0a0b'/%3E%3Ctext x='32' y='45' font-family='Georgia,serif' font-size='36' fill='%23d9a96b' text-anchor='middle'%3Ey%3C/text%3E%3C/svg%3E" />
@@ -538,15 +558,15 @@ def render_html(generated: str) -> str:
 <body>
 
 <header class="topbar shell">
-  <a class="mark" href="#top"><b>yxkshsh</b> · 作品集</a>
-  <p class="tag">Selected works / 2026</p>
+  <a class="mark" href="#top"><b>{name}</b> · {title}</a>
+  <p class="tag">{SITE["title_en"]} / {year}</p>
 </header>
 
 <main id="top">
 
   <section class="hero shell">
-    <p class="kicker">AI 影像与图像 · 2026</p>
-    <h1>作品集<span class="stop">。</span></h1>
+    <p class="kicker">{SITE["kicker"]} · {year}</p>
+    <h1>{title}<span class="stop">。</span></h1>
 
     <div class="hero-row">
       <p class="lede">
@@ -556,7 +576,7 @@ def render_html(generated: str) -> str:
       <ul class="stats">
         <li><b>{film_count:02d}</b><span>影像</span></li>
         <li><b>{still_count:02d}</b><span>图像</span></li>
-        <li><b>2026</b><span>年份</span></li>
+        <li><b>{year}</b><span>年份</span></li>
         <li><b>AI</b><span>生成</span></li>
       </ul>
     </div>
@@ -592,10 +612,10 @@ def render_html(generated: str) -> str:
 <footer class="footer shell">
   <p>
     页面上的影像与图像均由 AI 生成、经人工挑选整理；除另有标注外不含第三方素材。<br />
-    转载或商用请先联系。© 2026 yxkshsh
+    转载或商用请先联系。© {year} {name}
   </p>
   <p>
-    源码与原始文件：<a href="https://github.com/yxkshsh/artworks">github.com/yxkshsh/artworks</a><br />
+    源码与原始文件：<a href="{SITE["repo"]}">{repo_label}</a><br />
     最近更新 {generated}
   </p>
 </footer>
@@ -621,12 +641,40 @@ def render_html(generated: str) -> str:
 # ------------------------------------------------------------------
 
 def render_readme() -> str:
-    return """# 作品集 · Selected Works
+    return f"""# {SITE['title']} · {SITE['title_en']}
 
-2026 年的 AI 影像与图像，发布在 GitHub Pages：
+{SITE['year']} 年的 AI 影像与图像，发布在 GitHub Pages：
 
-- 页面：https://yxkshsh.github.io/artworks/
-- 仓库：https://github.com/yxkshsh/artworks
+- 页面：{SITE['url']}
+- 仓库：{SITE['repo']}
+
+## 改标题 / 署名
+
+站点级信息集中在 `tools/build.py` 顶部的 `SITE`：
+
+```python
+SITE = {{
+    "name": "yxkshsh",            # 署名：页头、页脚、浏览器标签
+    "title": "作品集",             # 首屏大标题
+    "title_en": "Selected Works", # 右上角英文小字
+    "kicker": "AI 影像与图像",     # 标题上方的小字
+    "year": "2026",
+    ...
+}}
+```
+
+- `title` 同时决定首屏大标题、浏览器标签（`作品集 · yxkshsh`）和分享卡片标题；
+- `name` 是署名，会出现在页头、页脚和 © 那一行；
+- 单条作品的标题不在这里，而在下面 `FILMS` / `STILLS` 每一条的 `"title"` 字段。
+
+改完重新构建再推送，一分钟左右线上生效：
+
+```bash
+python tools/build.py
+git add -A
+git commit -m "chore: 改标题"
+git push
+```
 
 ## 目录
 
