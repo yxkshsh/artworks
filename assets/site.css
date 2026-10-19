@@ -149,26 +149,13 @@ a { color: inherit; }
   align-items: flex-end;
   justify-content: space-between;
   gap: clamp(24px, 5vw, 64px);
-  margin-top: clamp(28px, 4vw, 44px);
-}
-
-.lede {
-  max-width: 40ch;
-  margin: 0;
-  color: var(--muted);
-  font-size: clamp(14px, 1.5vw, 17px);
-  line-height: 1.9;
-}
-
-.lede em {
-  font-style: normal;
-  color: var(--ink);
+  margin-top: clamp(46px, 5.4vw, 78px);
 }
 
 .stats {
   display: flex;
   gap: clamp(24px, 4vw, 56px);
-  margin: 0;
+  margin: 0 0 0 auto;
   padding: 0;
   list-style: none;
 }

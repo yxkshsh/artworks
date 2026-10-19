@@ -569,10 +569,6 @@ def render_html(generated: str) -> str:
     <h1>{title}<span class="stop">。</span></h1>
 
     <div class="hero-row">
-      <p class="lede">
-        {film_count} 段十几秒的短片，{still_count} 幅静帧。没有摄制组，也没有渲染农场——
-        只有提示词、几轮挑选，和一点耐心。<em>链接就是备份</em>，随时可以丢给别人看。
-      </p>
       <ul class="stats">
         <li><b>{film_count:02d}</b><span>影像</span></li>
         <li><b>{still_count:02d}</b><span>图像</span></li>
